@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 
-const curatedMovies = [
+
+const movies = [
   {
     id: 1,
     title: "Past Lives",
@@ -16,7 +17,7 @@ const curatedMovies = [
     curatorNote:
       "사랑보다 인연, 선택보다 남겨진 가능성에 가까운 영화. 조용한 대화 속에서 지나간 시간의 무게를 느끼게 한다.",
     awards: ["Academy Awards Best Picture Nominee", "Golden Globe Nominee"],
-    tasteTags: ["회고적", "인연", "잔잔한 슬픔", "말하지 못한 감정"],
+    tags: ["회고적", "인연", "잔잔한 슬픔", "말하지 못한 감정"],
     axis: ["Memory", "Relationship", "Silence"],
   },
   {
@@ -32,7 +33,7 @@ const curatedMovies = [
     curatorNote:
       "사랑과 의심의 경계가 무너지는 영화. 직접 말하지 않는 감정이 안개처럼 화면 전체에 번진다.",
     awards: ["Cannes Best Director"],
-    tasteTags: ["불완전한 관계", "안개 같은 감정", "절제된 로맨스", "미장센"],
+    tags: ["불완전한 관계", "안개 같은 감정", "절제된 로맨스", "미장센"],
     axis: ["Obsession", "Gaze", "Distance"],
   },
   {
@@ -48,7 +49,7 @@ const curatedMovies = [
     curatorNote:
       "그때는 이해하지 못했던 사랑을 뒤늦게 바라보는 영화. 기억은 선명하지만, 감정은 끝내 완전히 설명되지 않는다.",
     awards: ["Academy Awards Best Actor Nominee"],
-    tasteTags: ["기억", "가족", "상실", "뒤늦은 이해"],
+    tags: ["기억", "가족", "상실", "뒤늦은 이해"],
     axis: ["Family", "Memory", "Loss"],
   },
   {
@@ -64,12 +65,12 @@ const curatedMovies = [
     curatorNote:
       "가장 가까이 있으면서도 닿을 수 없는 마음에 관한 영화. 색감, 음악, 시선만으로 감정의 밀도를 만든다.",
     awards: ["Cannes Best Actor"],
-    tasteTags: ["절제된 감정", "색감", "금지된 마음", "여운"],
+    tags: ["절제된 감정", "색감", "금지된 마음", "여운"],
     axis: ["Desire", "Time", "Restraint"],
   },
 ];
 
-const communityPosts = [
+const posts = [
   {
     id: 1,
     user: "afterblue",
@@ -127,7 +128,8 @@ const people = [
 ];
 
 export default function Home() {
-  const [selectedMovie, setSelectedMovie] = useState(curatedMovies[0]);
+  const [activeTab, setActiveTab] = useState("films");
+  const [selectedMovie, setSelectedMovie] = useState(movies[0]);
   const [review, setReview] = useState("");
   const [recommendation, setRecommendation] = useState("");
   const [loading, setLoading] = useState(false);
@@ -170,282 +172,313 @@ export default function Home() {
       } else {
         setRecommendation(data.result);
       }
-    } catch (error) {
-      setRecommendation("API 연결에 실패했습니다. .env.local 파일을 확인해주세요.");
+    } catch {
+      setRecommendation("API 연결에 실패했습니다. Vercel 환경변수 또는 .env.local을 확인해주세요.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="app">
-      <section className="hero">
-        <nav className="nav">
+    <main className="appShell">
+      <header className="topbar">
+        <div className="brandBlock">
           <div className="brand">
             CinePa<span>Z</span>e
           </div>
+          <p>영화의 새로운 축을 만들다</p>
+        </div>
 
-          <div className="navLinks">
-            <a href="#films">Films</a>
-            <a href="#community">Community</a>
-            <a href="#profile">Profile</a>
-            <a href="#match">Match</a>
-          </div>
+        <nav className="tabs">
+          <button
+            className={activeTab === "films" ? "active" : ""}
+            onClick={() => setActiveTab("films")}
+          >
+            영화정보
+          </button>
+          <button
+            className={activeTab === "community" ? "active" : ""}
+            onClick={() => setActiveTab("community")}
+          >
+            커뮤니티
+          </button>
+          <button
+            className={activeTab === "profile" ? "active" : ""}
+            onClick={() => setActiveTab("profile")}
+          >
+            내 프로필
+          </button>
+          <button
+            className={activeTab === "recommend" ? "active" : ""}
+            onClick={() => setActiveTab("recommend")}
+          >
+            추천/매칭
+          </button>
         </nav>
+      </header>
 
-        <div className="heroGrid">
-          <div className="heroCopy">
-            <p className="eyebrow">Film Taste Social Network</p>
-            <h1>
-              영화의 새로운 축을 만들다,
-              <br />
-              CinePa<span>Z</span>e
-            </h1>
-            <p className="heroDesc">
-              운영자가 큐레이션한 영화 정보 위에 사용자의 감상, 관심작,
-              저장한 글, 팔로우 데이터를 쌓아 나만의 영화 취향 프로필을
-              만드는 SNS입니다.
+      <section className="hero">
+        <div>
+          <p className="eyebrow">Film Taste Social Network</p>
+          <h1>
+            영화 정보에서 시작해,
+            <br />
+            취향 프로필과 사람 매칭까지.
+          </h1>
+          <p className="heroText">
+            CinePaZe는 운영자가 큐레이션한 영화 정보를 기반으로 사용자의 감상,
+            관심작, 저장한 글, 팔로우 데이터를 쌓아 취향의 Z축을 만드는 영화 기반 SNS입니다.
+          </p>
+        </div>
+
+        <div className="heroCard">
+          <img src={selectedMovie.poster} alt={selectedMovie.title} />
+          <div>
+            <p className="miniLabel">Now Curated</p>
+            <h2>{selectedMovie.title}</h2>
+            <p>
+              {selectedMovie.year} · {selectedMovie.director}
             </p>
-
-            <div className="heroActions">
-              <button className="primaryBtn">취향 프로필 만들기</button>
-              <button className="ghostBtn">커뮤니티 둘러보기</button>
-            </div>
-          </div>
-
-          <div className="heroMovieCard">
-            <img src={selectedMovie.poster} alt={selectedMovie.title} />
-            <div className="heroMovieInfo">
-              <p className="smallText">Curated Film</p>
-              <h2>{selectedMovie.title}</h2>
-              <p>
-                {selectedMovie.year} · {selectedMovie.director}
-              </p>
-              <div className="tagWrap">
-                {selectedMovie.tasteTags.map((tag) => (
-                  <span className="tag" key={tag}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
+            <div className="tagWrap">
+              {selectedMovie.tags.map((tag) => (
+                <span className="tag blue" key={tag}>
+                  {tag}
+                </span>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section id="films" className="section twoColumns">
-        <div>
-          <div className="sectionTitle">
-            <p className="eyebrow">Operator Curated</p>
-            <h2>운영자 큐레이션 영화 정보</h2>
-            <p>
-              영화 정보는 사용자가 API에 묻는 방식이 아니라, 운영자가 직접
-              선별한 영화 페이지로 제공합니다.
-            </p>
-          </div>
+      {activeTab === "films" && (
+        <section className="contentGrid">
+          <div className="panel">
+            <div className="sectionHead">
+              <p className="eyebrow">Operator Curated</p>
+              <h2>영화정보</h2>
+              <p>
+                영화 정보는 사용자가 API에 묻는 방식이 아니라, 운영자가 직접 선별하고 업로드하는
+                큐레이션 페이지로 제공합니다.
+              </p>
+            </div>
 
-          <div className="movieGrid">
-            {curatedMovies.map((movie) => (
-              <button
-                key={movie.id}
-                className={`movieCard ${
-                  selectedMovie.id === movie.id ? "active" : ""
-                }`}
-                onClick={() => setSelectedMovie(movie)}
-              >
-                <img src={movie.poster} alt={movie.title} />
-                <div>
-                  <h3>{movie.title}</h3>
-                  <p>{movie.koreanTitle}</p>
-                  <span>{movie.director}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <aside className="detailPanel">
-          <p className="eyebrow">Film Page</p>
-          <h2>{selectedMovie.title}</h2>
-          <p className="subInfo">
-            {selectedMovie.koreanTitle} · {selectedMovie.year} ·{" "}
-            {selectedMovie.country} · {selectedMovie.runtime}
-          </p>
-
-          <div className="posterDetail">
-            <img src={selectedMovie.poster} alt={selectedMovie.title} />
-            <div>
-              <h4>Curator's Note</h4>
-              <p>{selectedMovie.curatorNote}</p>
+            <div className="movieList">
+              {movies.map((movie) => (
+                <button
+                  key={movie.id}
+                  className={`movieItem ${selectedMovie.id === movie.id ? "selected" : ""}`}
+                  onClick={() => setSelectedMovie(movie)}
+                >
+                  <img src={movie.poster} alt={movie.title} />
+                  <div>
+                    <h3>{movie.title}</h3>
+                    <p>{movie.koreanTitle}</p>
+                    <span>{movie.director}</span>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="infoBlock">
-            <h4>수상 / 노미네이트</h4>
-            {selectedMovie.awards.map((award) => (
-              <p key={award}>• {award}</p>
-            ))}
+          <div className="panel detail">
+            <p className="eyebrow">Film Page</p>
+            <h2>{selectedMovie.title}</h2>
+            <p className="muted">
+              {selectedMovie.koreanTitle} · {selectedMovie.year} · {selectedMovie.country} ·{" "}
+              {selectedMovie.runtime}
+            </p>
+
+            <div className="detailBody">
+              <img src={selectedMovie.poster} alt={selectedMovie.title} />
+              <div>
+                <h3>Curator's Note</h3>
+                <p>{selectedMovie.curatorNote}</p>
+              </div>
+            </div>
+
+            <div className="infoBlock">
+              <h3>수상 / 노미네이트</h3>
+              {selectedMovie.awards.map((award) => (
+                <p key={award}>• {award}</p>
+              ))}
+            </div>
+
+            <div className="infoBlock">
+              <h3>CinePaZe Axis</h3>
+              <div className="axisWrap">
+                {selectedMovie.axis.map((axis) => (
+                  <span key={axis}>{axis}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {activeTab === "community" && (
+        <section className="contentGrid">
+          <div className="panel wide">
+            <div className="sectionHead">
+              <p className="eyebrow">Community</p>
+              <h2>영화로 자기 이야기를 쓰는 피드</h2>
+              <p>
+                단순 리뷰가 아니라, 영화로 자기 감정과 취향을 드러내는 SNS 피드입니다.
+              </p>
+            </div>
+
+            <div className="postList">
+              {posts.map((post) => (
+                <article className="postCard" key={post.id}>
+                  <div className="postTop">
+                    <strong>@{post.user}</strong>
+                    <span>{post.movie}</span>
+                  </div>
+                  <p>{post.text}</p>
+                  <div className="tagWrap">
+                    {post.tags.map((tag) => (
+                      <span className="tag" key={tag}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="postActions">
+                    <span>좋아요 {post.likes}</span>
+                    <span>저장 {post.saves}</span>
+                    <span>같은 감상</span>
+                    <span>댓글</span>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
 
-          <div className="infoBlock">
-            <h4>취향 태그</h4>
+          <div className="panel">
+            <h2>글쓰기 프롬프트</h2>
+            <div className="promptList">
+              <p>이 영화에서 가장 오래 남은 장면은?</p>
+              <p>이 인물에게 공감한 이유는?</p>
+              <p>이 영화가 내 삶과 닮은 부분은?</p>
+              <p>나만 이렇게 느꼈나 싶은 해석은?</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {activeTab === "profile" && (
+        <section className="profileLayout">
+          <div className="profileHero panel">
+            <p className="eyebrow">My Taste Profile</p>
+            <h2>@my_paze</h2>
+            <p className="profileSentence">“{myTaste.line}”</p>
+
+            <div className="posterRow">
+              {movies.map((movie) => (
+                <img key={movie.id} src={movie.poster} alt={movie.title} />
+              ))}
+            </div>
+
             <div className="tagWrap">
-              {selectedMovie.tasteTags.map((tag) => (
-                <span className="tag blueTag" key={tag}>
+              {myTaste.tags.map((tag) => (
+                <span className="tag blue" key={tag}>
                   {tag}
                 </span>
               ))}
             </div>
           </div>
 
-          <div className="infoBlock">
-            <h4>CinePaZe Axis</h4>
-            <div className="axisList">
-              {selectedMovie.axis.map((axis) => (
-                <span key={axis}>{axis}</span>
+          <div className="panel">
+            <h2>취향 DNA</h2>
+            <div className="dnaList">
+              {myTaste.dna.map((item) => (
+                <div className="dnaItem" key={item.label}>
+                  <div className="dnaText">
+                    <span>{item.label}</span>
+                    <strong>{item.value}</strong>
+                  </div>
+                  <div className="bar">
+                    <div style={{ width: `${item.value}%` }} />
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-        </aside>
-      </section>
 
-      <section className="section recommendSection">
-        <div className="sectionTitle">
-          <p className="eyebrow">AI Recommendation</p>
-          <h2>추천은 API로 연결</h2>
-          <p>
-            영화 정보는 운영자가 업로드하고, AI API는 사용자의 취향과 감상문을
-            바탕으로 다음에 볼 영화와 추천 이유를 생성합니다.
-          </p>
-        </div>
+          <div className="panel">
+            <h2>프로필 데이터 소스</h2>
+            <ul className="sourceList">
+              <li>내가 본 영화</li>
+              <li>관심작</li>
+              <li>내가 쓴 리뷰</li>
+              <li>저장한 다른 사람의 글</li>
+              <li>팔로우한 유저/평론가</li>
+              <li>오래 읽은 글과 다시 찾은 글</li>
+            </ul>
+          </div>
+        </section>
+      )}
 
-        <div className="recommendBox">
-          <div className="selectedMini">
-            <img src={selectedMovie.poster} alt={selectedMovie.title} />
-            <div>
-              <p>현재 선택한 영화</p>
-              <strong>{selectedMovie.title}</strong>
+      {activeTab === "recommend" && (
+        <section className="contentGrid">
+          <div className="panel wide">
+            <div className="sectionHead">
+              <p className="eyebrow">AI Recommendation</p>
+              <h2>추천은 API로 연결</h2>
+              <p>
+                영화 정보는 운영자가 관리하고, 추천은 OpenRouter API를 통해 사용자의 취향과 감상을
+                기반으로 생성합니다.
+              </p>
+            </div>
+
+            <div className="recommendBox">
+              <div className="selectedMini">
+                <img src={selectedMovie.poster} alt={selectedMovie.title} />
+                <div>
+                  <p>현재 기준 영화</p>
+                  <strong>{selectedMovie.title}</strong>
+                </div>
+              </div>
+
+              <textarea
+                value={review}
+                onChange={(e) => setReview(e.target.value)}
+                placeholder="최근 좋았던 영화 감상이나 취향을 적어보세요. 예: 조용하고 여운이 긴 영화가 좋고, 설명이 많은 결말보다는 열린 결말을 좋아한다."
+              />
+
+              <button className="primaryBtn" onClick={getRecommendation}>
+                {loading ? "추천 생성 중..." : "AI 추천 받기"}
+              </button>
+
+              {recommendation && (
+                <div className="aiResult">
+                  <h3>AI Recommendation</h3>
+                  <p>{recommendation}</p>
+                </div>
+              )}
             </div>
           </div>
 
-          <textarea
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
-            placeholder="최근 좋았던 영화 감상이나 취향을 적어보세요. 예: 조용하고 여운이 긴 영화가 좋고, 설명이 많은 결말보다는 열린 결말을 좋아한다."
-          />
-
-          <button className="primaryBtn" onClick={getRecommendation}>
-            {loading ? "추천 생성 중..." : "AI 추천 받기"}
-          </button>
-
-          {recommendation && (
-            <div className="aiResult">
-              <h4>AI Recommendation</h4>
-              <p>{recommendation}</p>
+          <div className="panel">
+            <h2>취향이 맞는 사람</h2>
+            <div className="peopleList">
+              {people.map((person) => (
+                <article className="personCard" key={person.id}>
+                  <div className="matchScore">{person.match}%</div>
+                  <h3>@{person.name}</h3>
+                  <p>“{person.sentence}”</p>
+                  <div className="tagWrap">
+                    {person.tags.map((tag) => (
+                      <span className="tag" key={tag}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <button className="followBtn">팔로우</button>
+                </article>
+              ))}
             </div>
-          )}
-        </div>
-      </section>
-
-      <section id="community" className="section twoColumns">
-        <div>
-          <div className="sectionTitle">
-            <p className="eyebrow">Community</p>
-            <h2>영화로 자기 이야기를 쓰는 피드</h2>
           </div>
-
-          <div className="postList">
-            {communityPosts.map((post) => (
-              <article className="postCard" key={post.id}>
-                <div className="postTop">
-                  <strong>@{post.user}</strong>
-                  <span>{post.movie}</span>
-                </div>
-                <p>{post.text}</p>
-                <div className="tagWrap">
-                  {post.tags.map((tag) => (
-                    <span className="tag" key={tag}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <div className="postMeta">
-                  <span>좋아요 {post.likes}</span>
-                  <span>저장 {post.saves}</span>
-                  <span>같은 감상</span>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <aside id="profile" className="profilePanel">
-          <p className="eyebrow">Taste Profile</p>
-          <h2>@my_paze</h2>
-          <p className="profileLine">“{myTaste.line}”</p>
-
-          <div className="posterRow">
-            {curatedMovies.map((movie) => (
-              <img key={movie.id} src={movie.poster} alt={movie.title} />
-            ))}
-          </div>
-
-          <div className="tagWrap">
-            {myTaste.tags.map((tag) => (
-              <span className="tag blueTag" key={tag}>
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          <div className="dnaList">
-            {myTaste.dna.map((item) => (
-              <div className="dnaItem" key={item.label}>
-                <div className="dnaText">
-                  <span>{item.label}</span>
-                  <strong>{item.value}</strong>
-                </div>
-                <div className="bar">
-                  <div style={{ width: `${item.value}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </aside>
-      </section>
-
-      <section id="match" className="section">
-        <div className="sectionTitle">
-          <p className="eyebrow">Taste Matching</p>
-          <h2>취향이 맞는 사람</h2>
-        </div>
-
-        <div className="matchGrid">
-          {people.map((person) => (
-            <article className="matchCard" key={person.id}>
-              <div className="matchScore">{person.match}%</div>
-              <h3>@{person.name}</h3>
-              <p>“{person.sentence}”</p>
-
-              <div className="tagWrap">
-                {person.tags.map((tag) => (
-                  <span className="tag" key={tag}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              <div className="filmList">
-                {person.films.map((film) => (
-                  <span key={film}>{film}</span>
-                ))}
-              </div>
-
-              <button className="followBtn">팔로우</button>
-            </article>
-          ))}
-        </div>
-      </section>
+        </section>
+      )}
     </main>
   );
 }
