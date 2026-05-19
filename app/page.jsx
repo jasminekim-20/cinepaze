@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 
-
 const movies = [
   {
     id: 1,
@@ -107,7 +106,6 @@ const people = [
     sentence: "해피엔딩보다 오래 남는 침묵을 좋아합니다.",
     match: 93,
     tags: ["느린 호흡", "열린 결말", "불완전한 관계"],
-    films: ["Past Lives", "Decision to Leave", "Aftersun"],
   },
   {
     id: 2,
@@ -115,7 +113,6 @@ const people = [
     sentence: "장면보다 장면 이후의 감정을 오래 기억합니다.",
     match: 87,
     tags: ["미장센", "고독한 인물", "잔잔한 슬픔"],
-    films: ["In the Mood for Love", "Perfect Days", "Aftersun"],
   },
   {
     id: 3,
@@ -123,7 +120,6 @@ const people = [
     sentence: "말로 설명되지 않는 감정에 오래 머무릅니다.",
     match: 81,
     tags: ["기억", "관계의 거리", "회고"],
-    films: ["Past Lives", "Drive My Car", "Her"],
   },
 ];
 
@@ -143,6 +139,14 @@ export default function Home() {
         { label: "미장센 민감도", value: 78 },
         { label: "열린 결말 선호", value: 74 },
         { label: "대중성 선호", value: 34 },
+      ],
+      sources: [
+        "내가 본 영화",
+        "관심작",
+        "내가 쓴 리뷰",
+        "저장한 다른 사람의 글",
+        "팔로우한 유저/평론가",
+        "오래 읽은 글",
       ],
     }),
     []
@@ -173,7 +177,9 @@ export default function Home() {
         setRecommendation(data.result);
       }
     } catch {
-      setRecommendation("API 연결에 실패했습니다. Vercel 환경변수 또는 .env.local을 확인해주세요.");
+      setRecommendation(
+        "API 연결에 실패했습니다. .env.local 또는 Vercel 환경변수를 확인해주세요."
+      );
     } finally {
       setLoading(false);
     }
@@ -227,7 +233,8 @@ export default function Home() {
           </h1>
           <p className="heroText">
             CinePaZe는 운영자가 큐레이션한 영화 정보를 기반으로 사용자의 감상,
-            관심작, 저장한 글, 팔로우 데이터를 쌓아 취향의 Z축을 만드는 영화 기반 SNS입니다.
+            관심작, 저장한 글, 팔로우 데이터를 쌓아 취향의 Z축을 만드는 영화
+            기반 SNS입니다.
           </p>
         </div>
 
@@ -257,8 +264,8 @@ export default function Home() {
               <p className="eyebrow">Operator Curated</p>
               <h2>영화정보</h2>
               <p>
-                영화 정보는 사용자가 API에 묻는 방식이 아니라, 운영자가 직접 선별하고 업로드하는
-                큐레이션 페이지로 제공합니다.
+                영화 정보는 사용자가 API에 묻는 방식이 아니라, 운영자가 직접
+                선별하고 업로드하는 큐레이션 페이지로 제공합니다.
               </p>
             </div>
 
@@ -266,7 +273,9 @@ export default function Home() {
               {movies.map((movie) => (
                 <button
                   key={movie.id}
-                  className={`movieItem ${selectedMovie.id === movie.id ? "selected" : ""}`}
+                  className={`movieItem ${
+                    selectedMovie.id === movie.id ? "selected" : ""
+                  }`}
                   onClick={() => setSelectedMovie(movie)}
                 >
                   <img src={movie.poster} alt={movie.title} />
@@ -284,8 +293,8 @@ export default function Home() {
             <p className="eyebrow">Film Page</p>
             <h2>{selectedMovie.title}</h2>
             <p className="muted">
-              {selectedMovie.koreanTitle} · {selectedMovie.year} · {selectedMovie.country} ·{" "}
-              {selectedMovie.runtime}
+              {selectedMovie.koreanTitle} · {selectedMovie.year} ·{" "}
+              {selectedMovie.country} · {selectedMovie.runtime}
             </p>
 
             <div className="detailBody">
@@ -322,7 +331,8 @@ export default function Home() {
               <p className="eyebrow">Community</p>
               <h2>영화로 자기 이야기를 쓰는 피드</h2>
               <p>
-                단순 리뷰가 아니라, 영화로 자기 감정과 취향을 드러내는 SNS 피드입니다.
+                단순 리뷰가 아니라, 영화로 자기 감정과 취향을 드러내는 SNS
+                피드입니다.
               </p>
             </div>
 
@@ -406,12 +416,9 @@ export default function Home() {
           <div className="panel">
             <h2>프로필 데이터 소스</h2>
             <ul className="sourceList">
-              <li>내가 본 영화</li>
-              <li>관심작</li>
-              <li>내가 쓴 리뷰</li>
-              <li>저장한 다른 사람의 글</li>
-              <li>팔로우한 유저/평론가</li>
-              <li>오래 읽은 글과 다시 찾은 글</li>
+              {myTaste.sources.map((source) => (
+                <li key={source}>{source}</li>
+              ))}
             </ul>
           </div>
         </section>
@@ -424,8 +431,8 @@ export default function Home() {
               <p className="eyebrow">AI Recommendation</p>
               <h2>추천은 API로 연결</h2>
               <p>
-                영화 정보는 운영자가 관리하고, 추천은 OpenRouter API를 통해 사용자의 취향과 감상을
-                기반으로 생성합니다.
+                영화 정보는 운영자가 관리하고, 추천은 OpenRouter API를 통해
+                사용자의 취향과 감상을 기반으로 생성합니다.
               </p>
             </div>
 
